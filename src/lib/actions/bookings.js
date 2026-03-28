@@ -1,7 +1,7 @@
 'use server'
 
 import { db } from '@/db'
-import { bookings } from '@/db/schema'
+import { bookings, eventTypes } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -15,9 +15,18 @@ async function getUser() {
 }
 
 export async function createBooking(formData) {
-  const hostId = formData.get('hostId')
+  const eventTypeId = formData.get('eventTypeId')
+  let hostId = formData.get('hostId')
+
+  // Resolve hostId from event type if not provided
+  if (!hostId && eventTypeId) {
+    const [event] = await db.select({ userId: eventTypes.userId }).from(eventTypes).where(eq(eventTypes.id, eventTypeId))
+    hostId = event?.userId
+  }
+  if (!hostId) throw new Error('Could not determine host')
+
   await db.insert(bookings).values({
-    eventTypeId: formData.get('eventTypeId'),
+    eventTypeId,
     hostId,
     clientName: formData.get('clientName'),
     clientEmail: formData.get('clientEmail'),

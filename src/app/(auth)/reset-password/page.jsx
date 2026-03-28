@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { PrimaryButton } from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -26,10 +27,26 @@ export default function ResetPassword() {
   const strengthColors = ['', 'bg-error', 'bg-yellow-400', 'bg-green-500']
   const strengthLabels = ['', 'Weak', 'Medium', 'Strong']
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const supabase = createClient()
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSuccess(true)
-    setTimeout(() => router.push('/login'), 2000)
+    if (password !== confirm) {
+      setError('Passwords do not match')
+      return
+    }
+    setLoading(true)
+    setError(null)
+    const { error } = await supabase.auth.updateUser({ password })
+    setLoading(false)
+    if (error) {
+      setError(error.message)
+    } else {
+      setSuccess(true)
+      setTimeout(() => router.push('/login'), 2000)
+    }
   }
 
   if (success) {

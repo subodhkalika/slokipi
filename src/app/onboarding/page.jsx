@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { completeOnboarding } from '@/lib/actions/profile'
 import { PrimaryButton } from '@/components/ui/Button'
 import Input from '@/components/ui/Input'
 import ProgressBar from '@/components/ui/ProgressBar'
@@ -14,11 +15,20 @@ export default function Onboarding() {
   const router = useRouter()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
-  const handleNext = () => {
+  const [saving, setSaving] = useState(false)
+
+  const handleNext = async () => {
     if (step < 3) {
       setStep(step + 1)
     } else {
+      setSaving(true)
+      const fd = new FormData()
+      fd.set('name', formData.name)
+      fd.set('workType', formData.workType)
+      fd.set('url', formData.url)
+      await completeOnboarding(fd)
       router.push('/dashboard')
+      router.refresh()
     }
   }
 
