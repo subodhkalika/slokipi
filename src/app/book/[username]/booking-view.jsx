@@ -6,6 +6,7 @@ import Calendar from '@/components/ui/Calendar'
 import TimeSlotChip from '@/components/ui/TimeSlotChip'
 import Icon from '@/components/ui/Icon'
 import useMediaQuery from '@/hooks/useMediaQuery'
+import useTimezone from '@/hooks/useTimezone'
 
 const TIME_SLOTS = ['09:00 AM', '10:30 AM', '11:30 AM', '02:00 PM', '03:30 PM', '05:00 PM']
 
@@ -16,6 +17,7 @@ export default function BookingView({ profile, eventTypes = [] }) {
   const router = useRouter()
   const { username } = useParams()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const { label: tzLabel, offset: tzOffset } = useTimezone()
 
   const activeEvent = eventTypes.find((e) => e.id === selectedEvent) || eventTypes[0]
   const hostName = profile?.fullName || 'Host'
@@ -95,7 +97,7 @@ export default function BookingView({ profile, eventTypes = [] }) {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ backgroundColor: 'rgba(18, 24, 26, 0.5)', color: '#acb3b7' }}>
             <Icon name="public" size="16px" />
             <p className="text-[11px] font-medium tracking-wide">
-              Slots shown in <span style={{ color: '#f7f9fb' }}>{profile?.timezone || 'Pacific Time (GMT-7)'}</span>
+              Slots shown in <span style={{ color: '#f7f9fb' }}>{tzLabel} ({tzOffset})</span>
             </p>
           </div>
         </div>

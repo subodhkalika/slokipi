@@ -27,7 +27,8 @@
     "next": "^15.1.0",
     "postgres": "^3.4.5",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "resend": "^6.9.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
