@@ -1,7 +1,9 @@
 'use client'
 
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import Icon from '@/components/ui/Icon'
 import Avatar from '@/components/ui/Avatar'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -42,6 +44,25 @@ const TITLES = {
 export default function AppLayout({ children }) {
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const pathname = usePathname()
+  const router = useRouter()
+  const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const menuRef = useRef(null)
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setShowProfileMenu(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const handleLogout = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   if (isDesktop) {
     return (
@@ -94,7 +115,29 @@ export default function AppLayout({ children }) {
                 <button className="hover:text-primary transition-colors"><Icon name="notifications" /></button>
                 <button className="hover:text-primary transition-colors"><Icon name="help_outline" /></button>
               </div>
-              <Avatar alt="Alex" size="md" className="ring-2 ring-primary/10" />
+              <div className="relative" ref={menuRef}>
+                <button onClick={() => setShowProfileMenu(!showProfileMenu)} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                  <Avatar alt="Alex" size="md" className="ring-2 ring-primary/10" />
+                  <Icon name="expand_more" className="text-on-surface-variant text-sm" />
+                </button>
+                {showProfileMenu && (
+                  <div className="absolute right-0 top-14 w-56 bg-surface-container-lowest rounded-xl shadow-2xl shadow-on-surface/10 border border-outline-variant/10 py-2 z-50">
+                    <Link href="/settings" onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+                      <Icon name="person" className="text-on-surface-variant text-sm" /> Profile & Settings
+                    </Link>
+                    <Link href="/billing" onClick={() => setShowProfileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+                      <Icon name="credit_card" className="text-on-surface-variant text-sm" /> Billing
+                    </Link>
+                    <div className="my-1 h-px bg-surface-container-high" />
+                    <button onClick={handleLogout}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-error hover:bg-error/5 transition-colors w-full text-left">
+                      <Icon name="logout" className="text-sm" /> Sign Out
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </header>
           <div className="p-8 lg:p-12 max-w-7xl w-full mx-auto">{children}</div>
@@ -107,7 +150,24 @@ export default function AppLayout({ children }) {
     <div className="min-h-screen bg-surface text-on-surface pb-32">
       <header className="fixed top-0 w-full flex justify-between items-center px-6 py-4 glass-header z-50">
         <div className="flex items-center gap-3">
-          <Avatar alt="Alex" size="md" className="ring-2 ring-primary/10" />
+          <div className="relative" ref={menuRef}>
+            <button onClick={() => setShowProfileMenu(!showProfileMenu)}>
+              <Avatar alt="Alex" size="md" className="ring-2 ring-primary/10" />
+            </button>
+            {showProfileMenu && (
+              <div className="absolute left-0 top-14 w-56 bg-surface-container-lowest rounded-xl shadow-2xl shadow-on-surface/10 border border-outline-variant/10 py-2 z-50">
+                <Link href="/settings" onClick={() => setShowProfileMenu(false)}
+                  className="flex items-center gap-3 px-4 py-3 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
+                  <Icon name="person" className="text-on-surface-variant text-sm" /> Settings
+                </Link>
+                <div className="my-1 h-px bg-surface-container-high" />
+                <button onClick={handleLogout}
+                  className="flex items-center gap-3 px-4 py-3 text-sm text-error hover:bg-error/5 transition-colors w-full text-left">
+                  <Icon name="logout" className="text-sm" /> Sign Out
+                </button>
+              </div>
+            )}
+          </div>
           <h1 className="font-headline tracking-tight font-bold text-lg text-on-surface">
             {TITLES[pathname] || 'Slokipi'}
           </h1>
