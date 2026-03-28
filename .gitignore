@@ -6,3 +6,5 @@ dist
 .env.local
 .claude/settings.local.json
 .mcp.json
+test-results/
+playwright-report/
