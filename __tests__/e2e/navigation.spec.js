@@ -20,6 +20,6 @@ test.describe('Navigation', () => {
 
   test('onboarding page loads', async ({ page }) => {
     await page.goto('/onboarding')
-    await expect(page.getByText(/Slokipi/i)).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Welcome to Slokipi/i })).toBeVisible()
   })
 })
