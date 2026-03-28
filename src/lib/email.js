@@ -11,7 +11,7 @@ export async function sendBookingConfirmation({ clientEmail, clientName, hostNam
   }
 
   await resend.emails.send({
-    from: 'Slokipi <bookings@slokipi.com>',
+    from: 'Slokipi <onboarding@resend.dev>',
     to: clientEmail,
     subject: `Booking Confirmed: ${eventName} with ${hostName}`,
     html: `
@@ -63,7 +63,7 @@ export async function sendBookingCancellation({ clientEmail, clientName, hostNam
   }
 
   await resend.emails.send({
-    from: 'Slokipi <bookings@slokipi.com>',
+    from: 'Slokipi <onboarding@resend.dev>',
     to: clientEmail,
     subject: `Booking Cancelled: ${eventName} with ${hostName}`,
     html: `
