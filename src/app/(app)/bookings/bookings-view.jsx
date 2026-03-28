@@ -68,7 +68,7 @@ export default function BookingsView({ initialBookings = [] }) {
           {isDesktop && <span className="font-label text-[10px] uppercase tracking-[0.05em] font-semibold text-primary">Manage</span>}
           <div className="flex items-center gap-3">
             <h1 className={`font-headline font-extrabold tracking-tight text-on-surface ${isDesktop ? 'text-4xl' : 'text-2xl'}`}>Bookings</h1>
-            <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded-full">{BOOKINGS.length}</span>
+            <span className="px-2.5 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded-full">{allBookings.length}</span>
           </div>
         </div>
         {isDesktop && (
