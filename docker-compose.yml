@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: slokipi_test
+      POSTGRES_DB: slokipi
     ports:
       - "5433:5432"
     volumes:
@@ -25,7 +25,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/slokipi_test
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/slokipi
       NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
@@ -38,7 +38,7 @@ services:
       context: .
       dockerfile: Dockerfile.test
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/slokipi_test
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/slokipi
       CI: "true"
     depends_on:
       db:

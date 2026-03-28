@@ -4,6 +4,7 @@ out
 dist
 .env
 .env.local
+.env.development
 .claude/settings.local.json
 .mcp.json
 test-results/
