@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createEvent } from '@/lib/actions/events'
 import { PrimaryButton, SecondaryButton } from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -35,7 +36,21 @@ export default function () {
   const router = useRouter()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
-  const handleCreate = () => router.push('/events')
+  const [saving, setSaving] = useState(false)
+
+  const handleCreate = async () => {
+    setSaving(true)
+    const formData = new FormData()
+    formData.set('name', name)
+    formData.set('duration', duration.replace(' min', ''))
+    formData.set('description', description)
+    formData.set('color', color)
+    formData.set('location', location)
+    formData.set('price', isFree ? '0' : price)
+    formData.set('buffer', buffer.replace(' minutes', ''))
+    formData.set('limit', limit)
+    await createEvent(formData)
+  }
 
   return (
     <div className="space-y-8">
