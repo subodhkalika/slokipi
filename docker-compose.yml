@@ -34,6 +34,7 @@ services:
         condition: service_healthy
 
   test:
+    profiles: ["test"]
     build:
       context: .
       dockerfile: Dockerfile.test
