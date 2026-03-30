@@ -11,7 +11,7 @@ export default function SettingsView({ profile, email }) {
   const isDesktop = useMediaQuery('(min-width: 1024px)')
   const router = useRouter()
   const [saving, setSaving] = useState(false)
-  const [fullName, setFullName] = useState(profile?.fullName || '')
+  const [fullName, setFullName] = useState(profile?.name || '')
   const [slug, setSlug] = useState(profile?.slug || '')
   const [timezone, setTimezone] = useState(profile?.timezone || 'America/Los_Angeles')
   const [role, setRole] = useState(profile?.role || '')

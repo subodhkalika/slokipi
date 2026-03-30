@@ -1,4 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { getBookingWithEventType } from '@/lib/queries'
 import DetailView from './detail-view'
 
@@ -10,8 +10,8 @@ export async function generateMetadata({ params }) {
 
 export default async function BookingDetailPage({ params }) {
   const { id } = await params
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await auth()
+  const user = session?.user
 
   const result = user ? await getBookingWithEventType(id) : null
 

@@ -8,8 +8,8 @@ export async function generateMetadata({ params }) {
   const { username } = await params
   const profile = await getProfileBySlug(username)
   return {
-    title: profile ? `Book with ${profile.fullName}` : 'Book a Session',
-    description: profile ? `Schedule a session with ${profile.fullName}` : 'Book a scheduling session',
+    title: profile ? `Book with ${profile.name}` : 'Book a Session',
+    description: profile ? `Schedule a session with ${profile.name}` : 'Book a scheduling session',
   }
 }
 

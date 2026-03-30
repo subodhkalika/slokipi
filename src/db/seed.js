@@ -3,7 +3,7 @@ config({ path: '.env.local' })
 
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { profiles, eventTypes, bookings, availability, clients } from './schema.js'
+import { users, eventTypes, bookings, availability, clients } from './schema.js'
 
 const client = postgres(process.env.DATABASE_URL, { prepare: false })
 const db = drizzle(client)
@@ -26,16 +26,17 @@ async function seed() {
   console.log(`Seeding database for user: ${DEMO_USER_ID}\n`)
 
   // ─── Profile ─────────────────────────────────────────────
-  console.log('Creating profile...')
-  await db.insert(profiles).values({
+  console.log('Creating user...')
+  await db.insert(users).values({
     id: DEMO_USER_ID,
-    fullName: 'Alex Reed',
+    name: 'Alex Reed',
+    email: 'alex@slokipi.com',
     slug: 'alex-reed',
     role: 'Design Consultant',
     timezone: 'America/Los_Angeles',
   }).onConflictDoUpdate({
-    target: profiles.id,
-    set: { fullName: 'Alex Reed', slug: 'alex-reed', role: 'Design Consultant' },
+    target: users.id,
+    set: { name: 'Alex Reed', slug: 'alex-reed', role: 'Design Consultant' },
   })
 
   // ─── Event Types ─────────────────────────────────────────

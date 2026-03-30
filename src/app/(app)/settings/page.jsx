@@ -1,12 +1,12 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { getProfile } from '@/lib/queries'
 import SettingsView from './settings-view'
 
 export const metadata = { title: 'Settings' }
 
 export default async function SettingsPage() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await auth()
+  const user = session?.user
 
   const profile = user ? await getProfile(user.id) : null
 

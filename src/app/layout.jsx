@@ -1,4 +1,5 @@
 import { Manrope, Inter } from 'next/font/google'
+import Providers from './providers'
 import './globals.css'
 
 const manrope = Manrope({
@@ -31,7 +32,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="font-body bg-background text-on-surface">
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

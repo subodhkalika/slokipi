@@ -1,12 +1,12 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { getUserBookings } from '@/lib/queries'
 import CalendarView from './calendar-view'
 
 export const metadata = { title: 'Calendar' }
 
 export default async function CalendarPage() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await auth()
+  const user = session?.user
 
   const bookings = user ? await getUserBookings(user.id) : []
 

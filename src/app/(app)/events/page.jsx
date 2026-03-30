@@ -1,12 +1,12 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { getUserEventTypes } from '@/lib/queries'
 import EventsView from './events-view'
 
 export const metadata = { title: 'Event Types' }
 
 export default async function EventsPage() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await auth()
+  const user = session?.user
 
   const events = user ? await getUserEventTypes(user.id) : []
 

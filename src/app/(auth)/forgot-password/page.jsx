@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
+import { requestPasswordReset } from '@/lib/actions/password'
 import { PrimaryButton } from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -14,18 +14,15 @@ export default function ForgotPassword() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
-  const supabase = createClient()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${location.origin}/reset-password`,
-    })
+    const result = await requestPasswordReset(email)
     setLoading(false)
-    if (error) {
-      setError(error.message)
+    if (result.error) {
+      setError(result.error)
     } else {
       setSent(true)
     }

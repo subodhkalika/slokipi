@@ -1,12 +1,12 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { getUserAvailability } from '@/lib/queries'
 import AvailabilityView from './availability-view'
 
 export const metadata = { title: 'Availability' }
 
 export default async function AvailabilityPage() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await auth()
+  const user = session?.user
 
   const slots = user ? await getUserAvailability(user.id) : []
 

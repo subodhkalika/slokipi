@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signIn } from 'next-auth/react'
 import { PrimaryButton } from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -15,16 +15,15 @@ export default function LoginPage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
   const handleLogin = async (e) => {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setError(error.message)
+    const result = await signIn('credentials', { email, password, redirect: false })
+    if (result?.error) {
+      setError('Invalid email or password')
       setLoading(false)
     } else {
       router.push('/dashboard')
@@ -32,12 +31,7 @@ export default function LoginPage() {
     }
   }
 
-  const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${location.origin}/api/auth/callback` },
-    })
-  }
+  const handleGoogleLogin = () => signIn('google', { callbackUrl: '/dashboard' })
 
   return (
     <div>

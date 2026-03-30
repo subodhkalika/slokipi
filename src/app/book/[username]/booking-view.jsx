@@ -20,7 +20,7 @@ export default function BookingView({ profile, eventTypes = [] }) {
   const { label: tzLabel, offset: tzOffset } = useTimezone()
 
   const activeEvent = eventTypes.find((e) => e.id === selectedEvent) || eventTypes[0]
-  const hostName = profile?.fullName || 'Host'
+  const hostName = profile?.name || 'Host'
   const hostRole = profile?.role || 'Consultant'
 
   const handleConfirm = () => {

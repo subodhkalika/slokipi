@@ -4,23 +4,15 @@ import { db } from '@/db'
 import { availability } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { createServerClient } from '@/lib/supabase/server'
-
-async function getUser() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
-  return user
-}
+import { getUserId } from '@/lib/auth-helpers'
 
 export async function saveAvailability(slots) {
-  const user = await getUser()
-  // Delete existing and replace
-  await db.delete(availability).where(eq(availability.userId, user.id))
+  const userId = await getUserId()
+  await db.delete(availability).where(eq(availability.userId, userId))
   if (slots.length > 0) {
     await db.insert(availability).values(
       slots.map((slot) => ({
-        userId: user.id,
+        userId,
         dayOfWeek: slot.dayOfWeek,
         startTime: slot.startTime,
         endTime: slot.endTime,

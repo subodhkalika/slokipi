@@ -4,19 +4,12 @@ import { db } from '@/db'
 import { clients } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
-import { createServerClient } from '@/lib/supabase/server'
-
-async function getUser() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
-  return user
-}
+import { getUserId } from '@/lib/auth-helpers'
 
 export async function createClient(formData) {
-  const user = await getUser()
+  const userId = await getUserId()
   await db.insert(clients).values({
-    userId: user.id,
+    userId,
     name: formData.get('name'),
     email: formData.get('email'),
     phone: formData.get('phone') || null,
@@ -28,7 +21,7 @@ export async function createClient(formData) {
 }
 
 export async function updateClientNotes(id, notes) {
-  await getUser()
+  await getUserId()
   await db.update(clients).set({ notes }).where(eq(clients.id, id))
   revalidatePath(`/clients/${id}`)
 }

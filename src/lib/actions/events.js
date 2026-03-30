@@ -5,19 +5,12 @@ import { eventTypes } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
-
-async function getUser() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) throw new Error('Not authenticated')
-  return user
-}
+import { getUserId } from '@/lib/auth-helpers'
 
 export async function createEvent(formData) {
-  const user = await getUser()
+  const userId = await getUserId()
   await db.insert(eventTypes).values({
-    userId: user.id,
+    userId,
     name: formData.get('name'),
     duration: parseInt(formData.get('duration')),
     description: formData.get('description') || null,
@@ -32,32 +25,30 @@ export async function createEvent(formData) {
 }
 
 export async function updateEvent(id, formData) {
-  const user = await getUser()
-  await db.update(eventTypes)
-    .set({
-      name: formData.get('name'),
-      duration: parseInt(formData.get('duration')),
-      description: formData.get('description') || null,
-      color: formData.get('color') || '#4f4dcf',
-      locationType: formData.get('location') || 'video',
-      price: formData.get('price') || '0',
-      bufferMinutes: parseInt(formData.get('buffer') || '15'),
-      maxPerDay: formData.get('limit') ? parseInt(formData.get('limit')) : null,
-    })
-    .where(eq(eventTypes.id, id))
+  await getUserId()
+  await db.update(eventTypes).set({
+    name: formData.get('name'),
+    duration: parseInt(formData.get('duration')),
+    description: formData.get('description') || null,
+    color: formData.get('color') || '#4f4dcf',
+    locationType: formData.get('location') || 'video',
+    price: formData.get('price') || '0',
+    bufferMinutes: parseInt(formData.get('buffer') || '15'),
+    maxPerDay: formData.get('limit') ? parseInt(formData.get('limit')) : null,
+  }).where(eq(eventTypes.id, id))
   revalidatePath('/events')
   redirect('/events')
 }
 
 export async function deleteEvent(id) {
-  await getUser()
+  await getUserId()
   await db.delete(eventTypes).where(eq(eventTypes.id, id))
   revalidatePath('/events')
   redirect('/events')
 }
 
 export async function toggleEvent(id, active) {
-  await getUser()
+  await getUserId()
   await db.update(eventTypes).set({ active }).where(eq(eventTypes.id, id))
   revalidatePath('/events')
 }

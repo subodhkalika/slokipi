@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signIn } from 'next-auth/react'
+import { signup } from '@/lib/actions/signup'
 import { PrimaryButton } from '@/components/ui/Button'
 import Icon from '@/components/ui/Icon'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -16,7 +17,6 @@ export default function SignupPage() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
-  const supabase = createClient()
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
   const getStrength = () => {
@@ -33,33 +33,28 @@ export default function SignupPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
-    const { data, error: signUpError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: name } },
-    })
-    if (signUpError) {
-      setError(signUpError.message)
+
+    // Create user in DB
+    const result = await signup({ name, email, password })
+    if (result.error) {
+      setError(result.error)
       setLoading(false)
       return
     }
-    if (data.user) {
-      await supabase.from('profiles').upsert({
-        id: data.user.id,
-        full_name: name,
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
-      })
+
+    // Auto-login after signup
+    const loginResult = await signIn('credentials', { email, password, redirect: false })
+    if (loginResult?.error) {
+      setError('Account created but login failed. Please sign in manually.')
+      setLoading(false)
+      return
     }
+
     router.push('/onboarding')
     router.refresh()
   }
 
-  const handleGoogleSignup = async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${location.origin}/api/auth/callback?next=/onboarding` },
-    })
-  }
+  const handleGoogleSignup = () => signIn('google', { callbackUrl: '/onboarding' })
 
   return (
     <div>

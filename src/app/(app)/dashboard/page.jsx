@@ -1,12 +1,12 @@
-import { createServerClient } from '@/lib/supabase/server'
+import { auth } from '@/lib/auth'
 import { getUpcomingBookings, getBookingStats, getProfile } from '@/lib/queries'
 import DashboardView from './dashboard-view'
 
 export const metadata = { title: 'Dashboard' }
 
 export default async function DashboardPage() {
-  const supabase = await createServerClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const session = await auth()
+  const user = session?.user
 
   if (!user) {
     return <DashboardView bookings={[]} stats={{ today: 0, weekly: 0 }} />

@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { signOut } from 'next-auth/react'
 import Icon from '@/components/ui/Icon'
 import Avatar from '@/components/ui/Avatar'
 import useMediaQuery from '@/hooks/useMediaQuery'
@@ -57,12 +57,7 @@ export default function AppLayout({ children }) {
     return () => document.removeEventListener('mousedown', handler)
   }, [])
 
-  const handleLogout = async () => {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
-  }
+  const handleLogout = () => signOut({ callbackUrl: '/login' })
 
   if (isDesktop) {
     return (
